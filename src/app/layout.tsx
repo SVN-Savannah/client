@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
-import Script from 'next/script';
 import { Noto_Sans_KR } from 'next/font/google';
 import { Header } from '@/components/common/Header';
+import AuthSession from '@/components/auth/AuthSession';
+import Script from 'next/script';
+import KakaoMap from '@/components/map/KakaoMap';
+import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 
 const notoSansKr = Noto_Sans_KR({
 	subsets: ['latin'],
@@ -17,14 +20,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
-			<body className={`${notoSansKr.className} scrollbar-hide h-screen overflow-hidden`}>
-				<Script
-					strategy="beforeInteractive"
-					src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&autoload=false`}
-				/>
-				<Header />
-				{children}
-			</body>
+			<AuthSession>
+				<body className={`${notoSansKr.className} h-screen overflow-hidden scrollbar-hide`}>
+					<Header />
+					<Script
+						strategy="beforeInteractive"
+						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&autoload=false`}
+					/>
+					<SocialLoginButtons />
+					<KakaoMap />
+					{children}
+				</body>
+			</AuthSession>
 		</html>
 	);
 }

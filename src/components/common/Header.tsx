@@ -1,9 +1,14 @@
+'use client';
+
 import Image from 'next/image';
 import logo from '@/public/icon/logo.svg';
-import logout from '@/public/icon/logoutUserIcon.svg';
 import { QuestionMarkCircleIcon } from '@heroicons/react/16/solid';
+import { UserIcon } from '@heroicons/react/16/solid';
+import { useSession } from 'next-auth/react';
 
 export function Header() {
+	const { status } = useSession();
+
 	return (
 		<div className="flex w-full items-center justify-between bg-white px-4 py-2">
 			<Image src={logo} alt="star" className="mb-0.5 text-white" />
@@ -13,7 +18,11 @@ export function Header() {
 					SEARCH
 				</button>
 			</div>
-			<QuestionMarkCircleIcon width={42} height={42} color="black" />
+			{status === 'authenticated' ? (
+				<UserIcon width={42} height={42} color="black" />
+			) : (
+				<QuestionMarkCircleIcon width={42} height={42} color="black" />
+			)}
 		</div>
 	);
 }

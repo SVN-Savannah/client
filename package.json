@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/supabase-adapter": "^0.1.15",
     "@heroicons/react": "^2.1.1",
+    "@supabase/supabase-js": "^2.39.2",
+    "lint": "^0.8.19",
     "next": "14.0.3",
+    "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-scrollbar-hide": "^1.1.7"
