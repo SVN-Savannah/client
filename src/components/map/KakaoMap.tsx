@@ -1,3 +1,4 @@
+import useSearchStore from '@/store/searchStore';
 import { useEffect, useRef } from 'react';
 
 declare global {
@@ -8,17 +9,41 @@ declare global {
 
 export default function KakaoMap() {
 	const mapRef = useRef<HTMLDivElement>(null);
+	const searchKeyword = useSearchStore(state => state.keyword);
+
 	useEffect(() => {
-		const { kakao } = window;
-		kakao.maps.load(() => {
+		window.kakao.maps.load(() => {
 			const options = {
 				//지도를 생성할 때 필요한 기본 옵션
-				center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+				center: new window.kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
 				level: 5, //지도의 레벨(확대, 축소 정도)
 			};
 
-			const map = new kakao.maps.Map(mapRef.current, options); //지도 생성 및 객체 리턴
+			const map = new window.kakao.maps.Map(mapRef.current, options); //지도 생성 및 객체 리턴
+
+			if (searchKeyword) {
+				if (window.kakao && window.kakao.maps) {
+					const places = new window.kakao.maps.services.Places();
+					places.keywordSearch(searchKeyword, (result: string | any[], status: any) => {
+						if (status === window.kakao.maps.services.Status.OK) {
+							const bounds = new window.kakao.maps.LatLngBounds();
+							for (let i = 0; i < result.length; i++) {
+								displayMarker(result[i]);
+								bounds.extend(new window.kakao.maps.LatLng(result[i].y, result[i].x));
+							}
+							map.setBounds(bounds);
+						}
+					});
+				}
+			}
+
+			function displayMarker(place: { y: any; x: any }) {
+				const marker = new window.kakao.maps.Marker({
+					map: map,
+					position: new window.kakao.maps.LatLng(place.y, place.x),
+				});
+			}
 		});
-	}, []);
+	}, [searchKeyword]);
 	return <div id="map" ref={mapRef} className="h-full w-full"></div>;
 }

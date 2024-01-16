@@ -26,6 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						strategy="beforeInteractive"
 						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&autoload=false`}
 					/>
+					<Script
+						strategy="beforeInteractive"
+						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&libraries=services&autoload=false`}
+					/>
 					<SocialLoginButtons />
 					{children}
 				</body>
