@@ -4,7 +4,6 @@ import { Noto_Sans_KR } from 'next/font/google';
 import { Header } from '@/components/common/Header';
 import AuthSession from '@/components/auth/AuthSession';
 import Script from 'next/script';
-import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 
 const notoSansKr = Noto_Sans_KR({
 	subsets: ['latin'],
@@ -30,7 +29,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						strategy="beforeInteractive"
 						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&libraries=services&autoload=false`}
 					/>
-					<SocialLoginButtons />
 					{children}
 				</body>
 			</AuthSession>

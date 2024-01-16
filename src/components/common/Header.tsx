@@ -9,6 +9,7 @@ import { QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
 import SearchForm from './SearchForm';
 import { useState } from 'react';
 import ModalPortal from './modal/ModalPortal';
+import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 
 export function Header() {
 	const router = useRouter();
@@ -27,7 +28,6 @@ export function Header() {
 			{status === 'authenticated' ? (
 				<UserIcon width={42} height={42} color="black" />
 			) : (
-				// <QuestionMarkCircleIcon width={42} height={42} color="black" />
 				<QuestionMarkCircleIcon
 					width={42}
 					height={42}
@@ -45,7 +45,9 @@ export function Header() {
 						<div className="flex w-full justify-center px-6 py-5 text-black">
 							<p>안녕하세요 오디에 오신걸 환영해요:{')'}</p>
 						</div>
-						<div className="flex w-full justify-center p-6 pt-4">{/* 로그인 버튼 생성 */}</div>
+						<div className="flex w-full justify-center p-6 pt-4">
+							<SocialLoginButtons />
+						</div>
 					</div>
 				</ModalPortal>
 			)}
