@@ -27,8 +27,11 @@ export default function KakaoMap() {
 					places.keywordSearch(searchKeyword, (result: string | any[], status: any) => {
 						if (status === window.kakao.maps.services.Status.OK) {
 							const bounds = new window.kakao.maps.LatLngBounds();
+							// 최대 표시할 마커 개수 설정할 경우 사용
+							// const maxMarkers = 5;
+							// for (let i = 0; i < Math.min(result.length, maxMarkers); i++) {
 							for (let i = 0; i < result.length; i++) {
-								displayMarker(result[i]);
+								displayMarker(result[i], map);
 								bounds.extend(new window.kakao.maps.LatLng(result[i].y, result[i].x));
 							}
 							map.setBounds(bounds);
@@ -36,13 +39,47 @@ export default function KakaoMap() {
 					});
 				}
 			}
-
-			function displayMarker(place: { y: any; x: any }) {
+			let currentOverlay: { setMap: (arg0: null) => void } | null = null;
+			function displayMarker(place: { y: any; x: any; place_name: any }, map: undefined) {
+				const position = new window.kakao.maps.LatLng(place.y, place.x);
 				const marker = new window.kakao.maps.Marker({
 					map: map,
-					position: new window.kakao.maps.LatLng(place.y, place.x),
+					position: position,
+				});
+
+				//@TODO 오버레이 스타일 코드 tailwindCSS 로 수정
+				const overlay = new window.kakao.maps.CustomOverlay({
+					content: `<div class="overlay" style="background-color: white; color: black; padding: 8px; border-radius: 4px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);">${place.place_name}</div>`,
+					position: position,
+					yAnchor: 2.2,
+					zIndex: 3,
+				});
+
+				// 마커에 마우스오버 이벤트 등록
+				window.kakao.maps.event.addListener(marker, 'click', () => {
+					// overlay.setMap(map);
+					if (currentOverlay) {
+						currentOverlay.setMap(null); // 이전 오버레이 숨김
+					}
+					overlay.setMap(map); // 현재 오버레이 표시
+					currentOverlay = overlay; // 현재 오버레이를 추적
+				});
+
+				// 마커에 마우스아웃 이벤트 등록
+				window.kakao.maps.event.addListener(map, 'click', () => {
+					if (currentOverlay) {
+						currentOverlay.setMap(null);
+						currentOverlay = null;
+					}
+					// overlay.setMap(null);
 				});
 			}
+			// function displayMarker(place: { y: any; x: any }) {
+			// 	const marker = new window.kakao.maps.Marker({
+			// 		map: map,
+			// 		position: new window.kakao.maps.LatLng(place.y, place.x),
+			// 	});
+			// }
 		});
 	}, [searchKeyword]);
 	return <div id="map" ref={mapRef} className="h-full w-full"></div>;
