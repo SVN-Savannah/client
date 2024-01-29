@@ -1,3 +1,9 @@
+import FeedContainer from '@/components/feed/FeedContainer';
+
 export default function feedsPage() {
-	return <div>feeds 입니당~!</div>;
+	return (
+		<main className="flex h-full w-full items-start justify-center bg-white">
+			<FeedContainer />
+		</main>
+	);
 }
