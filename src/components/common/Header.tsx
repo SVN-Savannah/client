@@ -17,7 +17,7 @@ export function Header() {
 
 	const [modal, setModal] = useState(false);
 	return (
-		<div className="flex w-full items-center justify-between bg-white px-4 py-2">
+		<div className="flex w-full items-center justify-between border border-b-black bg-white px-4 py-2">
 			<Image
 				src={logo}
 				alt="logo"
