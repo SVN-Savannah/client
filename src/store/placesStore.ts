@@ -19,9 +19,17 @@ interface PlacesState {
 	setPlaces: (list: Place[]) => void;
 }
 
-const usePlacesStore = create<PlacesState>(set => ({
+export const usePlacesStore = create<PlacesState>(set => ({
 	places: [],
 	setPlaces: (places: Place[]) => set({ places }),
 }));
 
-export default usePlacesStore;
+export const getPlaceById = (id: string | string[]): Place | undefined => {
+	// usePlacesStore 훅을 통해 현재의 places 상태를 가져옵니다.
+	const { places } = usePlacesStore.getState();
+
+	// id 값이 일치하는 Place를 찾아서 반환합니다.
+	return places.find(place => place.id === id);
+};
+
+// export default { usePlacesStore, getPlaceById };

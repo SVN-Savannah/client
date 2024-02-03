@@ -1,5 +1,5 @@
 import useSearchStore from '@/store/searchStore';
-import usePlacesStore, { Place } from '@/store/placesStore';
+import { Place, usePlacesStore } from '@/store/placesStore';
 import { useEffect, useRef } from 'react';
 
 declare global {
@@ -10,8 +10,8 @@ declare global {
 
 export default function KakaoMap() {
 	const mapRef = useRef<HTMLDivElement>(null);
-	const searchKeyword = useSearchStore(state => state.keyword);
-	const usePlaces = usePlacesStore(state => state.setPlaces);
+	const useSearchKeyword = useSearchStore(state => state.keyword);
+	const setUsePlaces = usePlacesStore(state => state.setPlaces);
 
 	useEffect(() => {
 		window.kakao.maps.load(() => {
@@ -40,6 +40,9 @@ export default function KakaoMap() {
 							map: map,
 							position: currentPos,
 						});
+						console.log('currentPos', currentPos);
+						console.log('marker', marker);
+						setUsePlaces([]);
 					},
 					error => {
 						console.error('Error getting geolocation:', error.message);
@@ -47,10 +50,10 @@ export default function KakaoMap() {
 				);
 			}
 
-			if (searchKeyword) {
+			if (useSearchKeyword) {
 				if (window.kakao && window.kakao.maps) {
 					const places = new window.kakao.maps.services.Places();
-					places.keywordSearch(searchKeyword, (result: string | any[], status: any) => {
+					places.keywordSearch(useSearchKeyword, (result: string | any[], status: any) => {
 						if (status === window.kakao.maps.services.Status.OK) {
 							const bounds = new window.kakao.maps.LatLngBounds();
 							const locationArr: Place[] = [];
@@ -65,14 +68,14 @@ export default function KakaoMap() {
 							}
 							map.setBounds(bounds);
 							// console.log('locationArr check::', locationArr);
-							usePlaces(locationArr);
+							setUsePlaces(locationArr);
 						}
 					});
 				}
 			}
 			let currentOverlay: { setMap: (arg0: null) => void } | null = null;
 
-			function displayMarker(place: { y: any; x: any; place_name: any }, map: undefined) {
+			function displayMarker(place: Place, map: undefined) {
 				const position = new window.kakao.maps.LatLng(place.y, place.x);
 				const marker = new window.kakao.maps.Marker({
 					map: map,
@@ -107,6 +110,6 @@ export default function KakaoMap() {
 				});
 			}
 		});
-	}, [searchKeyword]);
+	}, [useSearchKeyword]);
 	return <div id="map" ref={mapRef} className="h-full w-full"></div>;
 }

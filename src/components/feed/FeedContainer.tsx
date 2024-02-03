@@ -1,13 +1,26 @@
 import { ArrowLeftIcon } from '@heroicons/react/16/solid';
 import FeedPost from './FeedPost';
 import { feedData } from '@/mock/feedData';
+import { Place } from '@/store/placesStore';
+import { useRouter } from 'next/navigation';
 
-export default function FeedContainer() {
+interface PlaceInfoProps {
+	placeInfo: Place | undefined;
+}
+
+const FeedContainter: React.FC<PlaceInfoProps> = ({ placeInfo }) => {
+	const router = useRouter();
 	return (
 		<section className="h-full w-768px">
 			<div className="flex h-48px w-full items-center justify-between">
-				<ArrowLeftIcon width={20} height={20} color="black" />
-				<h2 className="text-2xl font-bold">Feed Name</h2>
+				<ArrowLeftIcon
+					width={20}
+					height={20}
+					color="black"
+					onClick={() => router.back()}
+					className="cursor-pointer"
+				/>
+				<h2 className="text-2xl font-bold">{placeInfo?.place_name}</h2>
 			</div>
 			<div>
 				<ul className="h-860px overflow-auto scrollbar-hide">
@@ -20,4 +33,6 @@ export default function FeedContainer() {
 			</div>
 		</section>
 	);
-}
+};
+
+export default FeedContainter;
