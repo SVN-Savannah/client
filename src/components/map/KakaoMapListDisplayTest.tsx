@@ -25,31 +25,6 @@ export default function KakaoMap() {
 
 			// var infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 });
 
-			if (navigator.geolocation) {
-				// 브라우저가 위치 정보를 지원하는지 확인
-				navigator.geolocation.getCurrentPosition(
-					position => {
-						const { latitude, longitude } = position.coords;
-						const currentPos = new window.kakao.maps.LatLng(latitude, longitude);
-
-						// 지도의 중심을 현재 위치로 설정
-						map.setCenter(currentPos);
-
-						// 현재 위치에 마커 표시
-						const marker = new window.kakao.maps.Marker({
-							map: map,
-							position: currentPos,
-						});
-						console.log('currentPos', currentPos);
-						console.log('marker', marker);
-						setUsePlaces([]);
-					},
-					error => {
-						console.error('Error getting geolocation:', error.message);
-					},
-				);
-			}
-
 			if (useSearchKeyword) {
 				if (window.kakao && window.kakao.maps) {
 					const places = new window.kakao.maps.services.Places();
@@ -72,7 +47,31 @@ export default function KakaoMap() {
 						}
 					});
 				}
+			} else {
+				if (navigator.geolocation) {
+					// 브라우저가 위치 정보를 지원하는지 확인
+					navigator.geolocation.getCurrentPosition(
+						position => {
+							const { latitude, longitude } = position.coords;
+							const currentPos = new window.kakao.maps.LatLng(latitude, longitude);
+
+							// 지도의 중심을 현재 위치로 설정
+							map.setCenter(currentPos);
+
+							// 현재 위치에 마커 표시
+							const marker = new window.kakao.maps.Marker({
+								map: map,
+								position: currentPos,
+							});
+							setUsePlaces([]);
+						},
+						error => {
+							console.error('Error getting geolocation:', error.message);
+						},
+					);
+				}
 			}
+
 			let currentOverlay: { setMap: (arg0: null) => void } | null = null;
 
 			function displayMarker(place: Place, map: undefined) {

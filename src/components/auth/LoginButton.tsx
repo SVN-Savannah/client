@@ -11,19 +11,20 @@ type LoginProps = {
 
 export const LoginButton = ({ providerId, imageUrl, altText }: LoginProps) => {
 	return (
-		<button
-			onClick={() => {
-				signIn(providerId, {
-					redirect: true,
-					callbackUrl: '/',
-				});
-			}}
-		>
-			<Image
-				className="h-[47px] w-[337px] flex-shrink-0 rounded-[8px 8px 8px 8px]"
-				src={imageUrl}
-				alt={altText}
-			/>
+		<button>
+			<Image width={42} height={42} src={imageUrl} alt={altText} className="mr-10" />
 		</button>
+		// <button
+		// 	className="mb-2 flex items-center rounded-lg border border-neutral-15 px-12 py-2 text-body12 hover:bg-neutral-15"
+		// 	onClick={() => {
+		// 		signIn(providerId, {
+		// 			redirect: true,
+		// 			callbackUrl: '/',
+		// 		});
+		// 	}}
+		// >
+		// 	<Image width={24} height={24} src={imageUrl} alt={altText} className="mr-10" />
+		// 	<span>Sign in with {altText}</span>
+		// </button>
 	);
 };

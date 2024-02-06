@@ -38,14 +38,18 @@ export function Header() {
 			)}
 			{modal && (
 				<ModalPortal>
-					<div className="flex w-[26rem] flex-col items-center justify-center rounded-lg bg-neutral-10">
+					<div className="flex w-340px flex-col items-center justify-center rounded-lg bg-neutral-10">
 						<div className="flex w-full justify-end p-4 pb-0" onClick={() => setModal(false)}>
 							<XMarkIcon width={20} height={20} color="black" className="cursor-pointer" />
 						</div>
-						<div className="flex w-full justify-center px-6 py-5 text-black">
-							<p>안녕하세요 오디에 오신걸 환영해요:{')'}</p>
+						<div className="flex w-full px-6 py-5 text-black">
+							<p className="text-h1">
+								안녕하세요
+								<br /> 오디에 오신걸 환영해요:{')'}
+							</p>
 						</div>
-						<div className="flex w-full justify-center p-6 pt-4">
+						<div className="flex w-full flex-col justify-center p-6 pt-4">
+							<p className="mb-2 text-body12 text-neutral-40">3초만에 시작하기</p>
 							<SocialLoginButtons />
 						</div>
 					</div>

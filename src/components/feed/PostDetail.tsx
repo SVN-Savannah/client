@@ -15,7 +15,7 @@ type FeedPostProps = {
 	post: FeedDataType;
 };
 
-export default function FeedPost({ post }: FeedPostProps) {
+export default function PostDetail({ post }: FeedPostProps) {
 	const [displayComment, setDisplayComment] = useState(false);
 	const [displayOption, setDisplayOption] = useState(false);
 
@@ -47,16 +47,7 @@ export default function FeedPost({ post }: FeedPostProps) {
 					</div>
 				)}
 			</div>
-			<div className="px-4 py-10">
-				{`lorem${post.comments}`}
-				{/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim impedit quos animi error harum
-				minus temporibus autem adipisci delectus unde earum repellat, architecto obcaecati ipsa
-				eaque sit culpa ipsum labore eligendi itaque? Excepturi, suscipit modi! A, accusantium
-				molestias sunt labore nesciunt quae eveniet adipisci nobis magnam aliquid mollitia sint.
-				Possimus, deserunt. A, facilis. Reiciendis, iure mollitia beatae accusamus deleniti
-				similique, tenetur vero incidunt labore ipsa impedit quaerat doloribus nihil culpa
-				perspiciatis? */}
-			</div>
+			<div className="px-4 py-10">{`lorem${post.comments}`}</div>
 			<div className="flex w-full">
 				<div className="relative flex w-full">
 					<input type="text" className="mr-2 w-full rounded-md border border-black bg-white p-2" />
