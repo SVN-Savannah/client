@@ -69,7 +69,7 @@ type FeedDeleteData = {
 };
 
 const sessionToken = getSessionToken();
-const SERVER_URL = 'http://localhost:8080';
+const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
 async function getFeeds(page: number = 0, size: number = 10, placeId: string): Promise<FeedDataType[]> {
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}?page=${page}&size=${size}`, {

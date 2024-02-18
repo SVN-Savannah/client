@@ -1,14 +1,20 @@
-import { ArrowLeftIcon, PlusCircleIcon, PlusIcon, XMarkIcon } from '@heroicons/react/16/solid';
+"use client"
+
+import { ArrowLeftIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
 import PostDetail from './PostDetail';
-import { feedData } from '@/mock/feedData';
 import { Place, getPlaceById } from '@/store/placesStore';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 import ModalPortal from '../common/modal/ModalPortal';
 import { useSession } from 'next-auth/react';
+import { FeedDataType } from '@/mock/feedData';
 
-export default function FeedContainter() {
+type FeedContainterProps = {
+	feedData: FeedDataType[];
+};
+
+export default function FeedContainter({ feedData }: FeedContainterProps) {
 	const router = useRouter();
 	const params = useParams();
 	const { status } = useSession();
