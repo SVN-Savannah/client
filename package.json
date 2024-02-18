@@ -9,8 +9,10 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@auth/prisma-adapter": "^1.4.0",
 		"@auth/supabase-adapter": "^0.1.15",
 		"@heroicons/react": "^2.1.1",
+		"@prisma/client": "^5.9.1",
 		"@supabase/supabase-js": "^2.39.2",
 		"heroicons": "^2.1.1",
 		"lint": "^0.8.19",
