@@ -68,10 +68,11 @@ type FeedDeleteData = {
 	feedId: number;
 };
 
-const sessionToken = getSessionToken();
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
 async function getFeeds(page: number = 0, size: number = 10, placeId: string): Promise<FeedDataType[]> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}?page=${page}&size=${size}`, {
 		method: 'GET',
 		headers: {
@@ -103,6 +104,8 @@ async function getFeeds(page: number = 0, size: number = 10, placeId: string): P
 }
 
 async function createFeed({ placeId, content }: FeedCreateData): Promise<FeedDataType> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}`, {
 		method: 'POST',
 		headers: {
@@ -134,6 +137,8 @@ async function createFeed({ placeId, content }: FeedCreateData): Promise<FeedDat
 }
 
 async function updateFeed({ placeId, feedId, content }: FeedUpdateData): Promise<FeedDataType> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
 		method: 'PUT',
 		headers: {
@@ -165,6 +170,8 @@ async function updateFeed({ placeId, feedId, content }: FeedUpdateData): Promise
 }
 
 async function deleteFeed({ placeId, feedId }: FeedDeleteData): Promise<void> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
 		method: 'DELETE',
 		headers: {
