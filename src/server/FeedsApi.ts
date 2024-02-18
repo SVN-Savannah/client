@@ -1,6 +1,7 @@
 import { CommentType, CommentItem } from './CommentApi';
 import { formatDate } from './util/date';
 import { getSessionToken } from './auth';
+import { GenerateMockData } from './generate-mock-data';
 
 export type FeedDataType = {
     feedId: number;
@@ -71,6 +72,9 @@ type FeedDeleteData = {
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
 async function getFeeds(page: number = 0, size: number = 10, placeId: string): Promise<FeedDataType[]> {
+	const mock: any = GenerateMockData.feed(10)
+	return mock
+
 	const sessionToken = await getSessionToken();
 	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}?page=${page}&size=${size}`, {
@@ -104,6 +108,9 @@ async function getFeeds(page: number = 0, size: number = 10, placeId: string): P
 }
 
 async function createFeed({ placeId, content }: FeedCreateData): Promise<FeedDataType> {
+    const mock: any = GenerateMockData.feed(1);
+    return mock;
+
 	const sessionToken = await getSessionToken();
 	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}`, {
@@ -137,6 +144,9 @@ async function createFeed({ placeId, content }: FeedCreateData): Promise<FeedDat
 }
 
 async function updateFeed({ placeId, feedId, content }: FeedUpdateData): Promise<FeedDataType> {
+	const mock: any = GenerateMockData.feed(1);
+    return mock;
+
 	const sessionToken = await getSessionToken();
 	
 	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
