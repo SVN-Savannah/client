@@ -12,11 +12,13 @@
 	"dependencies": {
 		"@auth/prisma-adapter": "^1.4.0",
 		"@auth/supabase-adapter": "^0.1.15",
+		"@faker-js/faker": "^8.4.1",
 		"@heroicons/react": "^2.1.1",
 		"@prisma/client": "^5.9.1",
 		"@supabase/supabase-js": "^2.39.2",
+		"faker": "^6.6.6",
 		"heroicons": "^2.1.1",
-		"lint": "^0.8.19",
+		"lint": "^1.1.2",
 		"next": "14.0.3",
 		"next-auth": "^4.24.5",
 		"react": "^18",
@@ -25,6 +27,7 @@
 		"zustand": "^4.4.7"
 	},
 	"devDependencies": {
+		"@types/faker": "^6.6.9",
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",

@@ -1,5 +1,6 @@
 import { formatDate } from "./util/date";
 import { getSessionToken } from "./auth";
+import { GenerateMockData } from "./generate-mock-data";
 
 export type CommentType = {
 	name: string;
@@ -46,6 +47,9 @@ async function createComment({
 	feedId,
 	content,
 }: CommentCreateData): Promise<CommentType> {
+	const mock: any = GenerateMockData.comment(1)
+	return mock
+	
 	const sessionToken = await getSessionToken();
 
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${feedId}`, {
@@ -77,6 +81,9 @@ async function updateComment({
 	commentId,
 	content,
 }: CommentUpdateData): Promise<CommentType> {
+	const mock: any = GenerateMockData.comment(1)
+	return mock
+	
 	const sessionToken = await getSessionToken();
 	
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${feedId}/${commentId}`, {
