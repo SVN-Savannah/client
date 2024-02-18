@@ -1,4 +1,3 @@
-import { SupabaseAdapter } from '@auth/supabase-adapter';
 import { NextAuthOptions, getServerSession } from 'next-auth';
 import { Adapter } from 'next-auth/adapters';
 import { cookies } from 'next/headers'
@@ -33,7 +32,7 @@ export const authOptions: NextAuthOptions = {
 
 export const getServerAuthSession = () => getServerSession(authOptions);
 
-export const getSessionToken = () =>{
+export const getSessionToken = async () =>{
     const cookieStore = cookies()
     return cookieStore.get('next-auth.session-token')
 }

@@ -39,14 +39,15 @@ type CommentDeleteData = {
 	commentId: number;
 };
 
-const sessionToken = getSessionToken();
-const SERVER_URL = 'http://localhost:8080';
+const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
 async function createComment({
 	placeId,
 	feedId,
 	content,
 }: CommentCreateData): Promise<CommentType> {
+	const sessionToken = await getSessionToken();
+
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${feedId}`, {
 		method: 'POST',
 		headers: {
@@ -76,6 +77,8 @@ async function updateComment({
 	commentId,
 	content,
 }: CommentUpdateData): Promise<CommentType> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${feedId}/${commentId}`, {
 		method: 'PUT',
 		headers: {
@@ -100,6 +103,8 @@ async function updateComment({
 }
 
 async function deleteComment({ placeId, feedId, commentId }: CommentDeleteData): Promise<void> {
+	const sessionToken = await getSessionToken();
+	
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${feedId}/${commentId}`, {
 		method: 'DELETE',
 		headers: {
