@@ -1,15 +1,13 @@
-'use client';
-
 import FeedContainer from '@/components/feed/FeedContainer';
-import { feedData } from '@/mock/feedData';
-import { Place, getPlaceById, usePlacesStore } from '@/store/placesStore';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { FeedsApi } from '@/server/FeedsApi';
 
-export default function FeedDetail() {
+export default async function FeedDetail() {
+
+	const feeds = await FeedsApi.getFeeds(1, 10, "place1");
+
 	return (
 		<main className="flex h-full w-full items-start justify-center bg-white">
-			<FeedContainer feedData={feedData}  />
+			<FeedContainer feedData={feeds}  />
 		</main>
 	);
 }
