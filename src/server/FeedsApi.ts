@@ -1,10 +1,10 @@
 import { CommentType, CommentItem } from './CommentApi';
 import { formatDate } from './util/date';
-import { getSessionToken } from './auth';
+// import { getSessionToken } from './auth';
 import { GenerateMockData } from './generate-mock-data';
 
 export type FeedDataType = {
-    feedId: number;
+	feedId: number;
 	name: string;
 	content: string;
 	comments: CommentType[];
@@ -71,128 +71,133 @@ type FeedDeleteData = {
 
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
-async function getFeeds(page: number = 0, size: number = 10, placeId: string): Promise<FeedDataType[]> {
-	const mock: any = GenerateMockData.feed(10)
-	return mock
+async function getFeeds(
+	page: number = 0,
+	size: number = 10,
+	placeId: string,
+): Promise<FeedDataType[]> {
+	const mock: any = GenerateMockData.feed(10);
+	return mock;
 
-	const sessionToken = await getSessionToken();
-	
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}?page=${page}&size=${size}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `SESSIONID ${sessionToken?.value}`,
-		},
-	});
+	// const sessionToken = await getSessionToken();
 
+	// const res = await fetch(`${SERVER_URL}/feeds/${placeId}?page=${page}&size=${size}`, {
+	// 	method: 'GET',
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		Authorization: `SESSIONID ${sessionToken?.value}`,
+	// 	},
+	// });
 
-	if (!res.ok) {
-		throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
-	}
+	// if (!res.ok) {
+	// 	throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+	// }
 
-	const json: FeedsServerResType = await res.json();
+	// const json: FeedsServerResType = await res.json();
 
-	return json.content.map(entity => {
-		return {
-            feedId: entity.feedId,
-			name: entity.user.name,
-			content: entity.content,
-			comments: entity.comments.map(comment => {return {
-                updatedAt: formatDate(comment.updatedAt),
-                createdAt: formatDate(comment.createdAt),
-                name: comment.user.name,
-                comment: comment.content,
-            }}),
-		};
-	});
+	// return json.content.map(entity => {
+	// 	return {
+	//         feedId: entity.feedId,
+	// 		name: entity.user.name,
+	// 		content: entity.content,
+	// 		comments: entity.comments.map(comment => {return {
+	//             updatedAt: formatDate(comment.updatedAt),
+	//             createdAt: formatDate(comment.createdAt),
+	//             name: comment.user.name,
+	//             comment: comment.content,
+	//         }}),
+	// 	};
+	// });
 }
 
 async function createFeed({ placeId, content }: FeedCreateData): Promise<FeedDataType> {
-    const mock: any = GenerateMockData.feed(1);
-    return mock;
+	const mock: any = GenerateMockData.feed(1);
+	return mock;
 
-	const sessionToken = await getSessionToken();
-	
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `SESSIONID ${sessionToken?.value}`,
-		},
-		body: JSON.stringify({
-			content,
-		}),
-	});
+	// const sessionToken = await getSessionToken();
 
-	if (!res.ok) {
-		throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
-	}
+	// const res = await fetch(`${SERVER_URL}/feeds/${placeId}`, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		Authorization: `SESSIONID ${sessionToken?.value}`,
+	// 	},
+	// 	body: JSON.stringify({
+	// 		content,
+	// 	}),
+	// });
 
-	const json: FeedItem = await res.json();
+	// if (!res.ok) {
+	// 	throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+	// }
 
-	return {
-        feedId: json.feedId,
-		name: json.user.name,
-		content: json.content,
-        comments: json.comments.map(comment => {return {
-            updatedAt: formatDate(comment.updatedAt),
-            createdAt: formatDate(comment.createdAt),
-            name: comment.user.name,
-            comment: comment.content,
-        }}),
-	};
+	// const json: FeedItem = await res.json();
+
+	// return {
+	// 	feedId: json.feedId,
+	// 	name: json.user.name,
+	// 	content: json.content,
+	// 	comments: json.comments.map(comment => {
+	// 		return {
+	// 			updatedAt: formatDate(comment.updatedAt),
+	// 			createdAt: formatDate(comment.createdAt),
+	// 			name: comment.user.name,
+	// 			comment: comment.content,
+	// 		};
+	// 	}),
+	// };
 }
 
 async function updateFeed({ placeId, feedId, content }: FeedUpdateData): Promise<FeedDataType> {
 	const mock: any = GenerateMockData.feed(1);
-    return mock;
+	return mock;
 
-	const sessionToken = await getSessionToken();
-	
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `SESSIONID ${sessionToken?.value}`,
-		},
-		body: JSON.stringify({
-			content,
-		}),
-	});
+	// const sessionToken = await getSessionToken();
 
-	if (!res.ok) {
-		throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
-	}
+	// const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
+	// 	method: 'PUT',
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		Authorization: `SESSIONID ${sessionToken?.value}`,
+	// 	},
+	// 	body: JSON.stringify({
+	// 		content,
+	// 	}),
+	// });
 
-	const json: FeedItem = await res.json();
+	// if (!res.ok) {
+	// 	throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+	// }
 
-	return {
-        feedId: json.feedId,
-		name: json.user.name,
-		content: json.content,
-        comments: json.comments.map(comment => {return {
-            updatedAt: formatDate(comment.updatedAt),
-            createdAt: formatDate(comment.createdAt),
-            name: comment.user.name,
-            comment: comment.content,
-        }}),
-	};
+	// const json: FeedItem = await res.json();
+
+	// return {
+	// 	feedId: json.feedId,
+	// 	name: json.user.name,
+	// 	content: json.content,
+	// 	comments: json.comments.map(comment => {
+	// 		return {
+	// 			updatedAt: formatDate(comment.updatedAt),
+	// 			createdAt: formatDate(comment.createdAt),
+	// 			name: comment.user.name,
+	// 			comment: comment.content,
+	// 		};
+	// 	}),
+	// };
 }
 
 async function deleteFeed({ placeId, feedId }: FeedDeleteData): Promise<void> {
-	const sessionToken = await getSessionToken();
-	
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `SESSIONID ${sessionToken?.value}`,
-		},
-	});
-
-	if (!res.ok) {
-		throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
-	}
+	// const sessionToken = await getSessionToken();
+	// const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
+	// 	method: 'DELETE',
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		Authorization: `SESSIONID ${sessionToken?.value}`,
+	// 	},
+	// });
+	// if (!res.ok) {
+	// 	throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
+	// }
 }
 
 export const FeedsApi = {

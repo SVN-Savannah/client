@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { ArrowLeftIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
 import PostDetail from './PostDetail';
@@ -8,19 +8,55 @@ import { useEffect, useState } from 'react';
 import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 import ModalPortal from '../common/modal/ModalPortal';
 import { useSession } from 'next-auth/react';
-import { FeedDataType } from '@/mock/feedData';
+import { useInfiniteQuery } from 'react-query';
+import { FeedsApi } from '@/server/FeedsApi';
+import React from 'react';
 
-type FeedContainterProps = {
-	feedData: FeedDataType[];
-};
-
-export default function FeedContainter({ feedData }: FeedContainterProps) {
+export default function FeedContainter() {
 	const router = useRouter();
 	const params = useParams();
 	const { status } = useSession();
 
 	const [placeInfo, setPlaceInfo] = useState<Place>();
 	const [displayModal, setDisplayModal] = useState(false);
+
+	const fetchPosts = async (pageParam: number) => {
+		const data = await FeedsApi.getFeeds(pageParam, 10, 'place1');
+
+		const nextPage = pageParam + 1; // 단순히 현재 페이지 번호에 1을 더함
+
+		// PageData 객체 반환
+		return {
+			data: data,
+			nextPage: data.length ? nextPage : undefined,
+		};
+	};
+
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+		queryKey: ['posts'],
+		queryFn: async ({ pageParam = 0 }) => {
+			return fetchPosts(pageParam);
+		},
+		getNextPageParam: (lastPage, pages) => {
+			return lastPage.nextPage;
+		},
+	});
+
+	const observer = React.useRef<IntersectionObserver | null>(null);
+
+	const lastPostElementRef = React.useCallback(
+		(node: any) => {
+			if (isFetchingNextPage) return;
+			if (observer.current) observer.current.disconnect();
+			observer.current = new IntersectionObserver(entries => {
+				if (entries[0].isIntersecting && hasNextPage) {
+					fetchNextPage();
+				}
+			});
+			if (node) observer.current.observe(node);
+		},
+		[isFetchingNextPage, fetchNextPage, hasNextPage],
+	);
 
 	const onClickCreatePost = () => {
 		if (status === 'authenticated') {
@@ -31,8 +67,11 @@ export default function FeedContainter({ feedData }: FeedContainterProps) {
 	};
 
 	useEffect(() => {
-		const place = getPlaceById(params.feedId);
-		setPlaceInfo(place);
+		if (params) {
+			const place = getPlaceById(params.feedId);
+			setPlaceInfo(place);
+		}
+		fetchPosts(1);
 	}, [params]);
 
 	return (
@@ -46,7 +85,7 @@ export default function FeedContainter({ feedData }: FeedContainterProps) {
 					className="cursor-pointer"
 				/>
 				<div className="flex items-center">
-					<h2 className="mr-2 text-2xl font-bold">{placeInfo?.place_name}</h2>
+					<h2 className="mr-2 text-2xl font-bold">{placeInfo?.place_name ?? '서울역'}</h2>
 					<PlusCircleIcon
 						width={28}
 						height={28}
@@ -57,12 +96,25 @@ export default function FeedContainter({ feedData }: FeedContainterProps) {
 				</div>
 			</div>
 			<div>
-				<ul className="h-860px overflow-auto scrollbar-hide">
-					{feedData.map((post, idx) => (
-						<li key={idx} className="mb-4">
-							<PostDetail post={post} />
-						</li>
+				<ul className="h-[90vh] overflow-auto scrollbar-hide">
+					{data?.pages.map((page, i) => (
+						<React.Fragment key={i}>
+							{page.data.map(post => (
+								<li key={post.feedId} className="mb-4">
+									<PostDetail post={post} />
+								</li>
+							))}
+						</React.Fragment>
 					))}
+					<div ref={hasNextPage ? lastPostElementRef : undefined}>
+						{isFetchingNextPage ? (
+							<p>Loading more...</p>
+						) : hasNextPage ? (
+							<p>Scroll to load more</p>
+						) : (
+							<p>No more posts</p>
+						)}
+					</div>
 				</ul>
 			</div>
 			{displayModal && (

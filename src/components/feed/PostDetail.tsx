@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedDataType } from '@/mock/feedData';
+import { FeedDataType } from '@/server/FeedsApi';
 import {
 	ArrowUpCircleIcon,
 	ChatBubbleOvalLeftEllipsisIcon,
@@ -20,6 +20,24 @@ export default function PostDetail({ post }: FeedPostProps) {
 	const [displayOption, setDisplayOption] = useState(false);
 
 	const isCommented = post.comments.length !== 0;
+	const content = post.content.substring(0, 70) + (post.content.length > 70 ? '...' : ''); // 글자 수 제한
+
+	const handleShare = async () => {
+		if (navigator.share) {
+			try {
+				await navigator.share({
+					title: 'ODEE 피드 공유하기',
+					text: content,
+					url: window.location.href,
+				});
+			} catch (error) {
+				console.error('Error sharing content', error);
+			}
+		} else {
+			alert('사용 중인 브라우저에서 공유하기 기능을 지원하지 않습니다.');
+		}
+	};
+
 	return (
 		<article className="rounded-md border-2 border-neutral-60 p-4">
 			<div className="relative flex items-center justify-between">
@@ -47,10 +65,14 @@ export default function PostDetail({ post }: FeedPostProps) {
 					</div>
 				)}
 			</div>
-			<div className="px-4 py-10">{`lorem${post.comments}`}</div>
+			<div className="px-4 py-10">{content}</div>
 			<div className="flex w-full">
 				<div className="relative flex w-full">
-					<input type="text" className="mr-2 w-full rounded-md border border-black bg-white p-2" />
+					<input
+						type="text"
+						className="mr-2 w-full rounded-md border border-black bg-white p-2 pr-10"
+						maxLength={140}
+					/>
 					<ArrowUpCircleIcon
 						width={24}
 						hanging={24}
@@ -66,7 +88,13 @@ export default function PostDetail({ post }: FeedPostProps) {
 						className={`mx-1.5 ${isCommented && 'cursor-pointer'}`}
 						onClick={() => setDisplayComment(!displayComment)}
 					/>
-					<ShareIcon width={30} hanging={30} color="black" className="mx-1.5 cursor-pointer" />
+					<ShareIcon
+						width={30}
+						hanging={30}
+						color="black"
+						className="mx-1.5 cursor-pointer"
+						onClick={handleShare}
+					/>
 					<HeartIcon width={36} hanging={36} color="black" className="mx-1.5 cursor-pointer" />
 				</div>
 			</div>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 export function MarkerList() {
 	const router = useRouter();
 	const places = usePlacesStore(state => state.places);
-	console.log('이거 맞는지 확ㅇ니', places);
+
 	return (
 		<div className="color-black absolute right-8 top-36 z-10 h-[70%] w-400px overflow-auto rounded-lg bg-white px-10 py-8 scrollbar-hide">
 			<ul>
