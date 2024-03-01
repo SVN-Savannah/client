@@ -4,6 +4,7 @@ import { Noto_Sans_KR } from 'next/font/google';
 import { Header } from '@/components/common/Header';
 import AuthSession from '@/components/auth/AuthSession';
 import Script from 'next/script';
+import Providers from '@/components/providers/Provides';
 
 const notoSansKr = Noto_Sans_KR({
 	subsets: ['latin'],
@@ -20,16 +21,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="en">
 			<AuthSession>
 				<body className={`${notoSansKr.className} h-screen overflow-hidden scrollbar-hide`}>
-					<Header />
-					<Script
-						strategy="beforeInteractive"
-						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&autoload=false`}
-					/>
-					<Script
-						strategy="beforeInteractive"
-						src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&libraries=services&autoload=false`}
-					/>
-					{children}
+					<Providers>
+						<Header />
+						<Script
+							strategy="beforeInteractive"
+							src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&autoload=false`}
+						/>
+						<Script
+							strategy="beforeInteractive"
+							src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.PUBLIC_MAP_KEY}&libraries=services&autoload=false`}
+						/>
+						{children}
+					</Providers>
 				</body>
 			</AuthSession>
 		</html>
