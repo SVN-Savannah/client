@@ -3,42 +3,52 @@
 import { ArrowLeftIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
 import PostDetail from './PostDetail';
 import { Place, getPlaceById } from '@/store/placesStore';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 import ModalPortal from '../common/modal/ModalPortal';
-import { useSession } from 'next-auth/react';
 import { useInfiniteQuery } from 'react-query';
-import { FeedsApi } from '@/server/FeedsApi';
 import React from 'react';
 
 export default function FeedContainter() {
 	const router = useRouter();
+	// const params = useSearchParams();
+	// const placeId = params.get('place');
 	const params = useParams();
-	const { status } = useSession();
+	const placeId = params.placeId;
 
 	const [placeInfo, setPlaceInfo] = useState<Place>();
 	const [displayModal, setDisplayModal] = useState(false);
 
 	const fetchPosts = async (pageParam: number) => {
-		const data = await FeedsApi.getFeeds(pageParam, 10, 'place1');
+		try {
+			const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
+			// const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
 
-		const nextPage = pageParam + 1; // 단순히 현재 페이지 번호에 1을 더함
+			if (res.ok) {
+				const data = await res.json();
 
-		// PageData 객체 반환
-		return {
-			data: data,
-			nextPage: data.length ? nextPage : undefined,
-		};
+				// PageData 객체 반환
+				return {
+					data: data.content,
+					nextPage: data.content.length > 0 ? pageParam + 1 : undefined,
+				};
+			} else {
+				// 오류 처리
+				console.error('API 호출 실패:', res.statusText);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
 	};
 
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-		queryKey: ['posts'],
-		queryFn: async ({ pageParam = 0 }) => {
+		queryKey: ['posts', placeId],
+		queryFn: ({ pageParam = 1 }) => {
 			return fetchPosts(pageParam);
 		},
 		getNextPageParam: (lastPage, pages) => {
-			return lastPage.nextPage;
+			return lastPage?.nextPage;
 		},
 	});
 
@@ -59,20 +69,21 @@ export default function FeedContainter() {
 	);
 
 	const onClickCreatePost = () => {
-		if (status === 'authenticated') {
-			router.push(`/feeds/post/${placeInfo?.id}`);
-		} else {
-			setDisplayModal(true);
-		}
+		router.push(`/feed/write?place=${placeId}`);
+		// if (status === 'authenticated') {
+		// 	router.push(`/feeds/post/${placeInfo?.id}`);
+		// } else {
+		// 	setDisplayModal(true);
+		// }
 	};
 
 	useEffect(() => {
 		if (params) {
-			const place = getPlaceById(params.feedId);
+			// const place = getPlaceById(params.get('place'));
+			const place = getPlaceById(placeId);
 			setPlaceInfo(place);
 		}
-		fetchPosts(1);
-	}, [params]);
+	}, []);
 
 	return (
 		<section className="h-full w-768px">
@@ -96,10 +107,10 @@ export default function FeedContainter() {
 				</div>
 			</div>
 			<div>
-				<ul className="h-[90vh] overflow-auto scrollbar-hide">
+				<ul className="h-[80vh] overflow-auto scrollbar-hide">
 					{data?.pages.map((page, i) => (
 						<React.Fragment key={i}>
-							{page.data.map(post => (
+							{page?.data.map((post: any) => (
 								<li key={post.feedId} className="mb-4">
 									<PostDetail post={post} />
 								</li>

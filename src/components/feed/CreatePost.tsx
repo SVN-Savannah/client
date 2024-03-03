@@ -1,16 +1,13 @@
 'use client';
 
-import { Place, getPlaceById } from '@/store/placesStore';
 import { ArrowLeftIcon } from '@heroicons/react/16/solid';
-import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 export default function CreatePost() {
 	const router = useRouter();
-	const params = useParams();
-
-	const [placeInfo, setPlaceInfo] = useState<Place>();
+	const params = useSearchParams();
+	const placeId = params.get('place');
 
 	const {
 		register,
@@ -21,29 +18,35 @@ export default function CreatePost() {
 		mode: 'onChange',
 	});
 
-	const onSubmit = async (data: any) => {
-		const response = await fetch('/api/feeds', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				content: data,
-			}),
-		});
-		const responseData = await response.json(); // 서버로부터 응답 받기
-		console.log('onSubmit responseData::', responseData);
-		// if (response.feedId) {
-		// 	router.push(`/feeds/${response.feedId}`);
-		// }
+	const onSubmit = async (content: any) => {
+		let isFetched = false;
+		try {
+			const res = await fetch(`/api/feed/post?place=${placeId}`, {
+				method: 'POST',
+				body: JSON.stringify(content), // 보낼 데이터를 JSON 문자열로 변환
+			});
+
+			if (res.ok) {
+				// const data = await res.json();
+				isFetched = true;
+			} else {
+				console.error('API 호출 실패:', res.statusText);
+			}
+
+			if (isFetched) {
+				router.push(`/feed?place=${placeId}`);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
 	};
 
-	useEffect(() => {
-		if (params) {
-			const place = getPlaceById(params.feedId);
-			setPlaceInfo(place);
-		}
-	}, [params]);
+	// useEffect(() => {
+	// 	if (params) {
+	// 		const place = getPlaceById(params.feedId);
+	// 		setPlaceInfo(place);
+	// 	}
+	// }, [params]);
 
 	return (
 		<section className="h-full w-768px">
@@ -55,10 +58,10 @@ export default function CreatePost() {
 					onClick={() => router.back()}
 					className="cursor-pointer"
 				/>
-				<h2 className="text-2xl font-bold">{placeInfo?.place_name ?? '서울역'}</h2>
+				<h2 className="text-2xl font-bold">{/* @TODO 장소명 표시 */}</h2>
 			</div>
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<h3 className="mb-6 text-[28px] font-bold">유저 닉네임</h3>
+				<h3 className="mb-2 text-[28px] font-bold">유저 닉네임</h3>
 				<textarea
 					id="content"
 					className="h-[60vh] w-full resize-none rounded-lg border border-neutral-100 bg-white p-4 focus:outline-none"
@@ -70,7 +73,6 @@ export default function CreatePost() {
 					<button
 						type="submit"
 						className="rounded-lg bg-neutral-100 px-8 py-4 font-bold text-neutral"
-						// onClick={() => router.push(`/feeds/${params.feedId}`)}
 					>
 						작성 완료
 					</button>
