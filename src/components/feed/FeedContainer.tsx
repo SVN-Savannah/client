@@ -15,7 +15,7 @@ export default function FeedContainter() {
 	// const params = useSearchParams();
 	// const placeId = params.get('place');
 	const params = useParams();
-	const placeId = params.placeId;
+	const placeId = params?.placeId;
 
 	const [placeInfo, setPlaceInfo] = useState<Place>();
 	const [displayModal, setDisplayModal] = useState(false);
@@ -23,10 +23,9 @@ export default function FeedContainter() {
 	const fetchPosts = async (pageParam: number) => {
 		try {
 			const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
-			// const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
-
 			if (res.ok) {
 				const data = await res.json();
+				console.log('피드 데이터', data);
 
 				// PageData 객체 반환
 				return {
@@ -69,7 +68,7 @@ export default function FeedContainter() {
 	);
 
 	const onClickCreatePost = () => {
-		router.push(`/feed/write?place=${placeId}`);
+		router.push(`/feed/create?place=${placeId}`);
 		// if (status === 'authenticated') {
 		// 	router.push(`/feeds/post/${placeInfo?.id}`);
 		// } else {

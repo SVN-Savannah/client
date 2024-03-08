@@ -2,12 +2,17 @@
 
 import { ArrowLeftIcon } from '@heroicons/react/16/solid';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export default function CreatePost() {
+export default function EditPost() {
 	const router = useRouter();
 	const params = useSearchParams();
 	const placeId = params?.get('place');
+	const postId = params?.get('post');
+
+	// @TODO 타입설정해주고 fetchPost 로 받아온 데이터 넣어서 input 에 표시하기
+	const [post, setPost] = useState();
 
 	const {
 		register,
@@ -18,11 +23,27 @@ export default function CreatePost() {
 		mode: 'onChange',
 	});
 
+	const fetchPost = async () => {
+		try {
+			const res = await fetch(`/api/feed/post?place=${placeId}&post=${postId}`);
+			if (res.ok) {
+				const data = await res.json();
+				console.log('피드 데이터', data);
+				return data;
+			} else {
+				// 오류 처리
+				console.error('API 호출 실패:', res.statusText);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
+	};
+
 	const onSubmit = async (content: any) => {
 		let isFetched = false;
 		try {
-			const res = await fetch(`/api/feed/post?place=${placeId}`, {
-				method: 'POST',
+			const res = await fetch(`/api/feed/post?place=${placeId}&feed=${postId}`, {
+				method: 'PUP',
 				body: JSON.stringify(content), // 보낼 데이터를 JSON 문자열로 변환
 			});
 			console.log(res.ok);
@@ -41,12 +62,9 @@ export default function CreatePost() {
 		}
 	};
 
-	// useEffect(() => {
-	// 	if (params) {
-	// 		const place = getPlaceById(params.feedId);
-	// 		setPlaceInfo(place);
-	// 	}
-	// }, [params]);
+	useEffect(() => {
+		fetchPost();
+	});
 
 	return (
 		<section className="h-full w-768px">

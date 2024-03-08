@@ -1,6 +1,7 @@
 'use client';
 
-import { FeedDataType } from '@/model/feed';
+import { useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
 	ArrowUpCircleIcon,
 	ChatBubbleOvalLeftEllipsisIcon,
@@ -9,8 +10,8 @@ import {
 	ShareIcon,
 	UserCircleIcon,
 } from '@heroicons/react/16/solid';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { FeedDataType } from '@/model/feed';
+import { useDeletePost } from '@/hooks/post/post';
 
 type FeedPostProps = {
 	post: FeedDataType;
@@ -20,9 +21,10 @@ export default function PostDetail({ post }: FeedPostProps) {
 	const router = useRouter();
 	// const params = useSearchParams();
 	// const placeId = params.get('place');
-	const params = useParams();
-	const placeId = params.placeId;
-	console.log('post', post);
+	// const params = useParams();
+	// const placeId = params?.placeId;
+	const deleteMutation = useDeletePost();
+
 	const [displayComment, setDisplayComment] = useState(false);
 	const [displayOption, setDisplayOption] = useState(false);
 
@@ -45,23 +47,23 @@ export default function PostDetail({ post }: FeedPostProps) {
 		}
 	};
 
-	const deletePost = async () => {
-		console.log('????');
+	const handleEdit = () => {
+		setDisplayOption(false);
+		router.push(`/feed/edit?place=${post.placeId}&post=${post.feedId}`);
 		try {
-			const res = await fetch(`/api/feed/post?place=${post.placeId}&post=${post.feedId}`, {
-				method: 'DELETE', // HTTP 메서드 지정
-			});
-
-			if (res.ok) {
-				// 추가적인 성공 처리 로직 (예: 상태 업데이트, 사용자에게 알림 등)
-				console.log('Post deleted successfully');
-				setDisplayOption(false);
-			} else {
-				// 서버 응답이 OK가 아닌 경우, 에러 처리
-				throw new Error('Failed to delete the post.');
-			}
+			setDisplayOption(false);
 		} catch (error) {
-			console.error('Error:', error);
+			console.error('Error deleting the post:', error);
+			// 에러 처리 로직
+		}
+	};
+
+	const handleDelete = () => {
+		try {
+			deleteMutation(post);
+			setDisplayOption(false);
+		} catch (error) {
+			console.error('Error deleting the post:', error);
 			// 에러 처리 로직
 		}
 	};
@@ -84,10 +86,10 @@ export default function PostDetail({ post }: FeedPostProps) {
 				</div>
 				{displayOption && (
 					<div className="absolute right-0 top-1 z-10 rounded-md border-2 border-neutral-60 bg-white p-2 shadow-md">
-						<div className="cursor-pointer p-2" onClick={() => setDisplayOption(!displayOption)}>
+						<div className="cursor-pointer p-2" onClick={handleEdit}>
 							수정
 						</div>
-						<div className="cursor-pointer p-2" onClick={() => deletePost()}>
+						<div className="cursor-pointer p-2" onClick={handleDelete}>
 							삭제
 						</div>
 					</div>
@@ -97,7 +99,7 @@ export default function PostDetail({ post }: FeedPostProps) {
 				className="cursor-pointer px-4 py-10"
 				// onClick={() => router.push(`/feed?place=${placeId}&=post${post.feedId}`)}
 				// onClick={() => router.push(`/feed/${post.feedId}?place=${placeId}&post=${post.feedId}`)}
-				onClick={() => router.push(`/feed/${placeId}/${post.feedId}`)}
+				onClick={() => router.push(`/feed/${post.placeId}/${post.feedId}`)}
 			>
 				{content}
 			</div>

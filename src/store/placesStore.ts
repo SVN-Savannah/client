@@ -24,7 +24,7 @@ export const usePlacesStore = create<PlacesState>(set => ({
 	setPlaces: (places: Place[]) => set({ places }),
 }));
 
-export const getPlaceById = (id: string | string[] | null): Place | undefined => {
+export const getPlaceById = (id: string | string[] | undefined): Place | undefined => {
 	// usePlacesStore 훅을 통해 현재의 places 상태를 가져옵니다.
 	const { places } = usePlacesStore.getState();
 

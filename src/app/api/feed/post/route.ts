@@ -6,11 +6,11 @@ const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get('place');
-	const feedId = searchParams.get('post');
+	const postId = searchParams.get('post');
 
 	const sessionToken = await getSessionToken();
 
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${feedId}`, {
+	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${postId}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -76,6 +76,6 @@ export async function DELETE(request: Request) {
 		},
 	});
 
-	console.log('api 호출 응답???', res);
+	console.log('delete 호출 응답', res);
 	return NextResponse.json(res);
 }
