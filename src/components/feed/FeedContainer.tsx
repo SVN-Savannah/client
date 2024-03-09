@@ -1,44 +1,46 @@
 'use client';
 
-import { ArrowLeftIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
+import { XMarkIcon } from '@heroicons/react/16/solid';
 import PostDetail from './PostDetail';
-import { Place, getPlaceById } from '@/store/placesStore';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 import ModalPortal from '../common/modal/ModalPortal';
-import { useSession } from 'next-auth/react';
 import { useInfiniteQuery } from 'react-query';
-import { FeedsApi } from '@/server/FeedsApi';
 import React from 'react';
+import FeedNavigationToolbar from './FeedNavigationToolbar';
 
 export default function FeedContainter() {
-	const router = useRouter();
 	const params = useParams();
-	const { status } = useSession();
+	const placeId = params?.placeId;
 
-	const [placeInfo, setPlaceInfo] = useState<Place>();
 	const [displayModal, setDisplayModal] = useState(false);
 
 	const fetchPosts = async (pageParam: number) => {
-		const data = await FeedsApi.getFeeds(pageParam, 10, 'place1');
+		try {
+			const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
+			if (res.ok) {
+				const data = await res.json();
 
-		const nextPage = pageParam + 1; // 단순히 현재 페이지 번호에 1을 더함
-
-		// PageData 객체 반환
-		return {
-			data: data,
-			nextPage: data.length ? nextPage : undefined,
-		};
+				return {
+					data: data.content,
+					nextPage: data.content.length > 0 ? pageParam + 1 : undefined,
+				};
+			} else {
+				console.error('API 호출 실패:', res.statusText);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
 	};
 
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-		queryKey: ['posts'],
-		queryFn: async ({ pageParam = 0 }) => {
+		queryKey: ['posts', placeId],
+		queryFn: ({ pageParam = 1 }) => {
 			return fetchPosts(pageParam);
 		},
 		getNextPageParam: (lastPage, pages) => {
-			return lastPage.nextPage;
+			return lastPage?.nextPage;
 		},
 	});
 
@@ -58,48 +60,14 @@ export default function FeedContainter() {
 		[isFetchingNextPage, fetchNextPage, hasNextPage],
 	);
 
-	const onClickCreatePost = () => {
-		if (status === 'authenticated') {
-			router.push(`/feeds/post/${placeInfo?.id}`);
-		} else {
-			setDisplayModal(true);
-		}
-	};
-
-	useEffect(() => {
-		if (params) {
-			const place = getPlaceById(params.feedId);
-			setPlaceInfo(place);
-		}
-		fetchPosts(1);
-	}, [params]);
-
 	return (
 		<section className="h-full w-768px">
-			<div className="flex h-48px w-full items-center justify-between">
-				<ArrowLeftIcon
-					width={28}
-					height={28}
-					color="black"
-					onClick={() => router.back()}
-					className="cursor-pointer"
-				/>
-				<div className="flex items-center">
-					<h2 className="mr-2 text-2xl font-bold">{placeInfo?.place_name ?? '서울역'}</h2>
-					<PlusCircleIcon
-						width={28}
-						height={28}
-						color="black"
-						onClick={onClickCreatePost}
-						className="cursor-pointer"
-					/>
-				</div>
-			</div>
+			<FeedNavigationToolbar isBack={false} />
 			<div>
-				<ul className="h-[90vh] overflow-auto scrollbar-hide">
+				<ul className="h-[80vh] overflow-auto scrollbar-hide">
 					{data?.pages.map((page, i) => (
 						<React.Fragment key={i}>
-							{page.data.map(post => (
+							{page?.data.map((post: any) => (
 								<li key={post.feedId} className="mb-4">
 									<PostDetail post={post} />
 								</li>
@@ -112,7 +80,7 @@ export default function FeedContainter() {
 						) : hasNextPage ? (
 							<p>Scroll to load more</p>
 						) : (
-							<p>No more posts</p>
+							<p></p>
 						)}
 					</div>
 				</ul>

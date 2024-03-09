@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useDeletePost } from '@/hooks/post/post';
+import { PostType } from '@/model/post';
 import {
 	ArrowUpCircleIcon,
 	ChatBubbleOvalLeftEllipsisIcon,
@@ -10,29 +10,43 @@ import {
 	ShareIcon,
 	UserCircleIcon,
 } from '@heroicons/react/16/solid';
-import { FeedDataType } from '@/model/feed';
-import { useDeletePost } from '@/hooks/post/post';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-type FeedPostProps = {
-	post: FeedDataType;
-};
-
-export default function PostDetail({ post }: FeedPostProps) {
+export default function SinglePost() {
 	const router = useRouter();
+	const params = useParams();
+	const placeId = params?.placeId;
+	const postId = params?.postId;
 	const deleteMutation = useDeletePost();
 
-	const [displayComment, setDisplayComment] = useState(false);
+	const [post, setPost] = useState<PostType>();
 	const [displayOption, setDisplayOption] = useState(false);
+	const [displayComment, setDisplayComment] = useState(false);
 
-	const isCommented = post.comments.length !== 0;
-	const content = post.content.substring(0, 70) + (post.content.length > 70 ? '...' : ''); // 글자 수 제한
+	const isCommented = post?.comments.length !== 0;
+
+	const getPost = async () => {
+		try {
+			const res = await fetch(`/api/feed/post?place=${placeId}&post=${postId}`);
+
+			if (res.ok) {
+				const data = await res.json();
+				setPost(data);
+			} else {
+				console.error('API 호출 실패:', res.statusText);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
+	};
 
 	const handleShare = async () => {
 		if (navigator.share) {
 			try {
 				await navigator.share({
 					title: 'ODEE 피드 공유하기',
-					text: content,
+					// text: post?.content,
 					url: window.location.href,
 				});
 			} catch (error) {
@@ -45,7 +59,7 @@ export default function PostDetail({ post }: FeedPostProps) {
 
 	const handleEdit = () => {
 		setDisplayOption(false);
-		router.push(`/feed/edit?place=${post.placeId}&post=${post.feedId}`);
+		router.push(`/feed/edit?place=${post?.placeId}&post=${post?.feedId}`);
 		try {
 			setDisplayOption(false);
 		} catch (error) {
@@ -55,19 +69,25 @@ export default function PostDetail({ post }: FeedPostProps) {
 
 	const handleDelete = () => {
 		try {
-			deleteMutation(post);
-			setDisplayOption(false);
+			if (post) {
+				deleteMutation(post);
+				setDisplayOption(false);
+			}
 		} catch (error) {
 			console.error('Error deleting the post:', error);
 		}
 	};
+
+	useEffect(() => {
+		getPost();
+	}, []);
 
 	return (
 		<article className="rounded-md border-2 border-neutral-60 p-4">
 			<div className="relative flex items-center justify-between">
 				<div className="flex items-center">
 					<UserCircleIcon width={36} hanging={36} color="black" className="mr-3" />
-					<span className="">{post.user.name}</span>
+					<span className="">{post?.user.name}</span>
 				</div>
 				<div>
 					<EllipsisHorizontalIcon
@@ -79,7 +99,7 @@ export default function PostDetail({ post }: FeedPostProps) {
 					/>
 				</div>
 				{displayOption && (
-					<div className="absolute right-0 top-1 z-10 rounded-md border-2 border-neutral-60 bg-white p-2 shadow-md">
+					<div className="absolute right-0 top-1 rounded-md border-2 border-neutral-60 bg-white p-2 shadow-md">
 						<div className="cursor-pointer p-2" onClick={handleEdit}>
 							수정
 						</div>
@@ -90,10 +110,10 @@ export default function PostDetail({ post }: FeedPostProps) {
 				)}
 			</div>
 			<div
-				className="cursor-pointer px-4 py-10"
-				onClick={() => router.push(`/feed/${post.placeId}/${post.feedId}`)}
+				className="px-4 py-10"
+				onClick={() => router.push(`/feed/${post?.placeId}/${post?.feedId}`)}
 			>
-				{content}
+				{post?.content}
 			</div>
 			<div className="flex w-full">
 				<div className="relative flex w-full">
@@ -129,10 +149,10 @@ export default function PostDetail({ post }: FeedPostProps) {
 			</div>
 			{displayComment && isCommented && (
 				<ul className="mx-2 my-3">
-					{post.comments.map((comment, idx) => (
+					{post?.comments.map((comment, idx) => (
 						<li className="flex items-start py-1" key={idx}>
-							<span className="mr-4 min-w-150px text-h4">{comment.name}</span>
-							<span className="text-body14">{comment.comment}</span>
+							<span className="mr-4 min-w-150px text-h4">{comment.user.name}</span>
+							<span className="text-body14">{comment.content}</span>
 						</li>
 					))}
 				</ul>

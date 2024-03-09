@@ -42,7 +42,7 @@ export default function KakaoMap() {
 								bounds.extend(new window.kakao.maps.LatLng(result[i].y, result[i].x));
 							}
 							map.setBounds(bounds);
-							// console.log('locationArr check::', locationArr);
+							// console.log('locationArr 확인::', locationArr);
 							setUsePlaces(locationArr);
 						}
 					});

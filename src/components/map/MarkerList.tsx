@@ -15,7 +15,7 @@ export function MarkerList() {
 							className={`${
 								places.length !== idx + 1 && 'border-b border-neutral-15'
 							} cursor-pointer p-4`}
-							onClick={() => router.push(`/feeds/${place.id}`)}
+							onClick={() => router.push(`/feed/${place.id}`)}
 						>
 							<div className="text-h2">{place.place_name}</div>
 							<div className="text-body12">{place.address_name}</div>
