@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
 	ArrowUpCircleIcon,
 	ChatBubbleOvalLeftEllipsisIcon,
@@ -19,10 +19,6 @@ type FeedPostProps = {
 
 export default function PostDetail({ post }: FeedPostProps) {
 	const router = useRouter();
-	// const params = useSearchParams();
-	// const placeId = params.get('place');
-	// const params = useParams();
-	// const placeId = params?.placeId;
 	const deleteMutation = useDeletePost();
 
 	const [displayComment, setDisplayComment] = useState(false);
@@ -54,7 +50,6 @@ export default function PostDetail({ post }: FeedPostProps) {
 			setDisplayOption(false);
 		} catch (error) {
 			console.error('Error deleting the post:', error);
-			// 에러 처리 로직
 		}
 	};
 
@@ -64,7 +59,6 @@ export default function PostDetail({ post }: FeedPostProps) {
 			setDisplayOption(false);
 		} catch (error) {
 			console.error('Error deleting the post:', error);
-			// 에러 처리 로직
 		}
 	};
 
@@ -97,8 +91,6 @@ export default function PostDetail({ post }: FeedPostProps) {
 			</div>
 			<div
 				className="cursor-pointer px-4 py-10"
-				// onClick={() => router.push(`/feed?place=${placeId}&=post${post.feedId}`)}
-				// onClick={() => router.push(`/feed/${post.feedId}?place=${placeId}&post=${post.feedId}`)}
 				onClick={() => router.push(`/feed/${post.placeId}/${post.feedId}`)}
 			>
 				{content}

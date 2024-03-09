@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowLeftIcon } from '@heroicons/react/16/solid';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import FeedNavigationToolbar from './FeedNavigationToolbar';
 
 export default function CreatePost() {
 	const router = useRouter();
@@ -14,7 +14,6 @@ export default function CreatePost() {
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
-		// resolver: zodResolver(),
 		mode: 'onChange',
 	});
 
@@ -23,11 +22,9 @@ export default function CreatePost() {
 		try {
 			const res = await fetch(`/api/feed/post?place=${placeId}`, {
 				method: 'POST',
-				body: JSON.stringify(content), // 보낼 데이터를 JSON 문자열로 변환
+				body: JSON.stringify(content),
 			});
-			console.log(res.ok);
 			if (res.ok) {
-				// const data = await res.json();
 				isFetched = true;
 			} else {
 				console.error('API 호출 실패:', res.statusText);
@@ -41,25 +38,9 @@ export default function CreatePost() {
 		}
 	};
 
-	// useEffect(() => {
-	// 	if (params) {
-	// 		const place = getPlaceById(params.feedId);
-	// 		setPlaceInfo(place);
-	// 	}
-	// }, [params]);
-
 	return (
 		<section className="h-full w-768px">
-			<div className="mb-4 flex h-48px w-full items-center justify-between">
-				<ArrowLeftIcon
-					width={28}
-					height={28}
-					color="black"
-					onClick={() => router.back()}
-					className="cursor-pointer"
-				/>
-				<h2 className="text-2xl font-bold">{/* @TODO 장소명 표시 */}</h2>
-			</div>
+			<FeedNavigationToolbar />
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<h3 className="mb-2 text-[28px] font-bold">유저 닉네임</h3>
 				<textarea

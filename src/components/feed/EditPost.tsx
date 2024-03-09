@@ -1,9 +1,10 @@
 'use client';
 
-import { ArrowLeftIcon } from '@heroicons/react/16/solid';
+import { PostType } from '@/model/post';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import FeedNavigationToolbar from './FeedNavigationToolbar';
 
 export default function EditPost() {
 	const router = useRouter();
@@ -11,15 +12,14 @@ export default function EditPost() {
 	const placeId = params?.get('place');
 	const postId = params?.get('post');
 
-	// @TODO 타입설정해주고 fetchPost 로 받아온 데이터 넣어서 input 에 표시하기
-	const [post, setPost] = useState();
+	const [post, setPost] = useState<PostType>();
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
+		setValue,
 	} = useForm({
-		// resolver: zodResolver(),
 		mode: 'onChange',
 	});
 
@@ -28,10 +28,9 @@ export default function EditPost() {
 			const res = await fetch(`/api/feed/post?place=${placeId}&post=${postId}`);
 			if (res.ok) {
 				const data = await res.json();
-				console.log('피드 데이터', data);
-				return data;
+				setValue('content', data.content);
+				setPost(data);
 			} else {
-				// 오류 처리
 				console.error('API 호출 실패:', res.statusText);
 			}
 		} catch (error) {
@@ -42,20 +41,18 @@ export default function EditPost() {
 	const onSubmit = async (content: any) => {
 		let isFetched = false;
 		try {
-			const res = await fetch(`/api/feed/post?place=${placeId}&feed=${postId}`, {
-				method: 'PUP',
+			const res = await fetch(`/api/feed/post?place=${placeId}&post=${postId}`, {
+				method: 'PUT',
 				body: JSON.stringify(content), // 보낼 데이터를 JSON 문자열로 변환
 			});
-			console.log(res.ok);
 			if (res.ok) {
-				// const data = await res.json();
 				isFetched = true;
 			} else {
 				console.error('API 호출 실패:', res.statusText);
 			}
 
 			if (isFetched) {
-				router.push(`/feed/${placeId}`);
+				router.push(`/feed/${placeId}/${postId}`);
 			}
 		} catch (error) {
 			console.error('Failed to create feed:', error);
@@ -64,22 +61,13 @@ export default function EditPost() {
 
 	useEffect(() => {
 		fetchPost();
-	});
+	}, []);
 
 	return (
 		<section className="h-full w-768px">
-			<div className="mb-4 flex h-48px w-full items-center justify-between">
-				<ArrowLeftIcon
-					width={28}
-					height={28}
-					color="black"
-					onClick={() => router.back()}
-					className="cursor-pointer"
-				/>
-				<h2 className="text-2xl font-bold">{/* @TODO 장소명 표시 */}</h2>
-			</div>
+			<FeedNavigationToolbar />
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<h3 className="mb-2 text-[28px] font-bold">유저 닉네임</h3>
+				<h3 className="mb-2 text-[28px] font-bold">{post?.user.name}</h3>
 				<textarea
 					id="content"
 					className="h-[60vh] w-full resize-none rounded-lg border border-neutral-100 bg-white p-4 focus:outline-none"

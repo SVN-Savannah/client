@@ -1,23 +1,19 @@
 'use client';
 
-import { ArrowLeftIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/16/solid';
+import { XMarkIcon } from '@heroicons/react/16/solid';
 import PostDetail from './PostDetail';
-import { Place, getPlaceById } from '@/store/placesStore';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { SocialLoginButtons } from '../auth/SocialLoginButtons';
 import ModalPortal from '../common/modal/ModalPortal';
 import { useInfiniteQuery } from 'react-query';
 import React from 'react';
+import FeedNavigationToolbar from './FeedNavigationToolbar';
 
 export default function FeedContainter() {
-	const router = useRouter();
-	// const params = useSearchParams();
-	// const placeId = params.get('place');
 	const params = useParams();
 	const placeId = params?.placeId;
 
-	const [placeInfo, setPlaceInfo] = useState<Place>();
 	const [displayModal, setDisplayModal] = useState(false);
 
 	const fetchPosts = async (pageParam: number) => {
@@ -25,15 +21,12 @@ export default function FeedContainter() {
 			const res = await fetch(`/api/feed?place=${placeId}&page=${pageParam}`);
 			if (res.ok) {
 				const data = await res.json();
-				console.log('피드 데이터', data);
 
-				// PageData 객체 반환
 				return {
 					data: data.content,
 					nextPage: data.content.length > 0 ? pageParam + 1 : undefined,
 				};
 			} else {
-				// 오류 처리
 				console.error('API 호출 실패:', res.statusText);
 			}
 		} catch (error) {
@@ -67,44 +60,9 @@ export default function FeedContainter() {
 		[isFetchingNextPage, fetchNextPage, hasNextPage],
 	);
 
-	const onClickCreatePost = () => {
-		router.push(`/feed/create?place=${placeId}`);
-		// if (status === 'authenticated') {
-		// 	router.push(`/feeds/post/${placeInfo?.id}`);
-		// } else {
-		// 	setDisplayModal(true);
-		// }
-	};
-
-	useEffect(() => {
-		if (params) {
-			// const place = getPlaceById(params.get('place'));
-			const place = getPlaceById(placeId);
-			setPlaceInfo(place);
-		}
-	}, []);
-
 	return (
 		<section className="h-full w-768px">
-			<div className="flex h-48px w-full items-center justify-between">
-				<ArrowLeftIcon
-					width={28}
-					height={28}
-					color="black"
-					onClick={() => router.back()}
-					className="cursor-pointer"
-				/>
-				<div className="flex items-center">
-					<h2 className="mr-2 text-2xl font-bold">{placeInfo?.place_name ?? '서울역'}</h2>
-					<PlusCircleIcon
-						width={28}
-						height={28}
-						color="black"
-						onClick={onClickCreatePost}
-						className="cursor-pointer"
-					/>
-				</div>
-			</div>
+			<FeedNavigationToolbar isBack={false} />
 			<div>
 				<ul className="h-[80vh] overflow-auto scrollbar-hide">
 					{data?.pages.map((page, i) => (
@@ -122,7 +80,7 @@ export default function FeedContainter() {
 						) : hasNextPage ? (
 							<p>Scroll to load more</p>
 						) : (
-							<p>No more posts</p>
+							<p></p>
 						)}
 					</div>
 				</ul>

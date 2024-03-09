@@ -41,15 +41,15 @@ export async function POST(request: Request) {
 	return NextResponse.json(res);
 }
 
-//@TODO 수정중/사용불가
 export async function PUT(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get('place');
+	const postId = searchParams.get('post');
 	const content = await request.json();
 
 	const sessionToken = await getSessionToken();
 
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}`, {
+	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${postId}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
@@ -61,7 +61,6 @@ export async function PUT(request: Request) {
 	return NextResponse.json(res);
 }
 
-//@TODO 수정중/사용불가
 export async function DELETE(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get('place');
@@ -76,6 +75,5 @@ export async function DELETE(request: Request) {
 		},
 	});
 
-	console.log('delete 호출 응답', res);
 	return NextResponse.json(res);
 }
