@@ -1,17 +1,12 @@
 'use client';
 
-import { useDeletePost } from '@/hooks/post/post';
+import { useDeletePost } from '@/hooks/post';
 import { PostType } from '@/model/post';
-import {
-	ArrowUpCircleIcon,
-	ChatBubbleOvalLeftEllipsisIcon,
-	EllipsisHorizontalIcon,
-	HeartIcon,
-	ShareIcon,
-	UserCircleIcon,
-} from '@heroicons/react/16/solid';
+import { EllipsisHorizontalIcon, UserCircleIcon } from '@heroicons/react/16/solid';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import PostReactionBar from './PostReactionBar';
+import Comments from './Comments';
 
 export default function SinglePost() {
 	const router = useRouter();
@@ -22,7 +17,7 @@ export default function SinglePost() {
 
 	const [post, setPost] = useState<PostType>();
 	const [displayOption, setDisplayOption] = useState(false);
-	const [displayComment, setDisplayComment] = useState(false);
+	const [displayComments, setDisplayComments] = useState(false);
 
 	const isCommented = post?.comments.length !== 0;
 
@@ -57,6 +52,10 @@ export default function SinglePost() {
 		}
 	};
 
+	const handleDisplayComments = () => {
+		setDisplayComments(!displayComments);
+	};
+
 	const handleEdit = () => {
 		setDisplayOption(false);
 		router.push(`/feed/edit?place=${post?.placeId}&post=${post?.feedId}`);
@@ -81,6 +80,10 @@ export default function SinglePost() {
 	useEffect(() => {
 		getPost();
 	}, []);
+
+	if (!post) {
+		return <></>;
+	}
 
 	return (
 		<article className="rounded-md border-2 border-neutral-60 p-4">
@@ -115,48 +118,14 @@ export default function SinglePost() {
 			>
 				{post?.content}
 			</div>
-			<div className="flex w-full">
-				<div className="relative flex w-full">
-					<input
-						type="text"
-						className="mr-2 w-full rounded-md border border-black bg-white p-2 pr-10"
-						maxLength={140}
-					/>
-					<ArrowUpCircleIcon
-						width={24}
-						hanging={24}
-						color="black"
-						className="absolute right-4 top-2 cursor-pointer"
-					/>
-				</div>
-				<div className="flex items-center">
-					<ChatBubbleOvalLeftEllipsisIcon
-						width={28}
-						hanging={28}
-						color="black"
-						className={`mx-1.5 ${isCommented && 'cursor-pointer'}`}
-						onClick={() => setDisplayComment(!displayComment)}
-					/>
-					<ShareIcon
-						width={30}
-						hanging={30}
-						color="black"
-						className="mx-1.5 cursor-pointer"
-						onClick={handleShare}
-					/>
-					<HeartIcon width={36} hanging={36} color="black" className="mx-1.5 cursor-pointer" />
-				</div>
-			</div>
-			{displayComment && isCommented && (
-				<ul className="mx-2 my-3">
-					{post?.comments.map((comment, idx) => (
-						<li className="flex items-start py-1" key={idx}>
-							<span className="mr-4 min-w-150px text-h4">{comment.user.name}</span>
-							<span className="text-body14">{comment.content}</span>
-						</li>
-					))}
-				</ul>
-			)}
+			<PostReactionBar
+				placeId={post.placeId}
+				postId={post.placeId}
+				handleShare={handleShare}
+				handleDisplayComments={handleDisplayComments}
+				isCommented={isCommented}
+			/>
+			<Comments placeId={post.placeId} feedId={post.feedId} />
 		</article>
 	);
 }

@@ -42,7 +42,7 @@ export default function CreatePost() {
 		<section className="h-full w-768px">
 			<FeedNavigationToolbar />
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<h3 className="mb-2 text-[28px] font-bold">유저 닉네임</h3>
+				<h3 className="mb-2 text-[28px] font-bold">{/* 유저 정보 받아와서 표시 */}</h3>
 				<textarea
 					id="content"
 					className="h-[60vh] w-full resize-none rounded-lg border border-neutral-100 bg-white p-4 focus:outline-none"
