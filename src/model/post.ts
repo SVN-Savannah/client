@@ -1,4 +1,4 @@
-import { CommentType } from './comment';
+import { CommentsType } from './comment';
 
 export type PostType = {
 	feedId: number;
@@ -11,5 +11,5 @@ export type PostType = {
 		userId: string;
 		name: 'string';
 	};
-	comments: CommentType[];
+	comments: CommentsType[];
 };

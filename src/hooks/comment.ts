@@ -1,13 +1,45 @@
 import { useMutation, useQueryClient } from 'react-query';
 
 export const useGetComments = async ({ placeId, feedId }: { placeId: string; feedId: number }) => {
-	const res = await fetch(`/api/feed/comment?place=${placeId}&post=${feedId}`);
+	try {
+		const res = await fetch(`/api/feed/comment?place=${placeId}&post=${feedId}`);
 
-	console.log('useGetComments 호출된는지?', res);
-	if (!res.ok) {
-		throw new Error('Failed to fetch comments');
+		if (res.ok) {
+			const data = await res.json();
+			return data;
+		} else {
+			console.error('API 호출 실패:', res.statusText);
+		}
+	} catch (error) {
+		console.error('Failed to create comments:', error);
 	}
-	return res.json();
+};
+
+export const useDeleteComments = async ({
+	placeId,
+	feedId,
+	commnetId,
+}: {
+	placeId: string;
+	feedId: number;
+	commnetId: number;
+}) => {
+	try {
+		const res = await fetch(
+			`/api/feed/comment?place=${placeId}&post=${feedId}&comment=${commnetId}`,
+			{
+				method: 'DELETE',
+			},
+		);
+
+		if (!res.ok) {
+			console.error('API 호출 실패:', res.statusText);
+		}
+
+		console.log('삭제 성공');
+	} catch (error) {
+		console.error('Failed to create comments:', error);
+	}
 };
 
 export const usePostComment = () => {

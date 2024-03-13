@@ -18,22 +18,22 @@
 // };
 
 export type CommentType = {
+	feedId: number;
+	commentId: number;
+	content: string;
+	updatedAt: string;
+	deleted: true;
+	user: {
+		userId: string;
+		name: string;
+	};
+};
+
+export type CommentsType = {
 	totalPages: number;
 	totalElements: number;
 	size: number;
-	content: [
-		{
-			feedId: number;
-			commentId: number;
-			content: string;
-			updatedAt: string;
-			deleted: true;
-			user: {
-				userId: string;
-				name: string;
-			};
-		},
-	];
+	content: CommentType[];
 	number: number;
 	sort: {
 		empty: true;

@@ -11,20 +11,19 @@ export default function CommentInput({ placeId, postId }: { placeId: string; pos
 		mode: 'onChange',
 	});
 
-	const commentValue = watch('comment');
-	console.log('댓글 입력값 확ㅇ니', commentValue);
-
-	const onSubmit = async (data: any) => {
+	// console.log(`Fetching to: /api/feed/comment?place=${placeId}&post=${postId}`);
+	//@TODO content -> comment 로 수정하기
+	const onSubmit = async (content: any) => {
+		console.log('Request body:', JSON.stringify(content));
 		try {
 			const res = await fetch(`/api/feed/comment?place=${placeId}&post=${postId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ comment: data.comment }),
+				body: JSON.stringify(content),
 			});
-			if (res.ok) {
-			} else {
+			if (!res.ok) {
 				console.error('API 호출 실패:', res.statusText);
 			}
 		} catch (error) {
@@ -35,12 +34,12 @@ export default function CommentInput({ placeId, postId }: { placeId: string; pos
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="relative flex w-full">
 			<input
-				id="comment"
+				id="content"
 				type="text"
-				value={commentValue}
 				className="mr-2 w-full rounded-md border border-black bg-white p-2 pr-10"
+				placeholder="댓글을 작성해 주세요."
+				{...register('content')}
 				maxLength={140}
-				{...register('comment')}
 			/>
 			<button type="submit">
 				<ArrowUpCircleIcon

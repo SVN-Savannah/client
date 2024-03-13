@@ -101,8 +101,7 @@ export default function PostDetail({ post }: PostDetailProps) {
 				handleDisplayComments={handleDisplayComments}
 				isCommented={isCommented}
 			/>
-			<Comments placeId={post.placeId} feedId={post.feedId} />
-			{/* {displayComments && isCommented && <Comments placeId={post.placeId} feedId={post.feedId} />} */}
+			{displayComments && isCommented && <Comments placeId={post.placeId} feedId={post.feedId} />}
 		</article>
 	);
 }

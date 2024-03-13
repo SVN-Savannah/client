@@ -14,16 +14,33 @@ export default function PostReactionBar({
 	handleDisplayComments: () => void;
 	isCommented: boolean;
 }) {
+	// @TODO like 상태 확인 필요
+	const toggleLike = async () => {
+		try {
+			const res = await fetch(`/api/feed/like?place=${placeId}&post=${postId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				// body: JSON.stringify(content),
+			});
+			console.log('res', res);
+			if (!res.ok) {
+				console.error('API 호출 실패:', res.statusText);
+			}
+		} catch (error) {
+			console.error('Failed to create feed:', error);
+		}
+	};
+
 	return (
 		<div className="flex w-full">
-			<form className="relative flex w-full">
-				<CommentInput placeId={placeId} postId={postId} />
-			</form>
+			<CommentInput placeId={placeId} postId={postId} />
 			<div className="flex items-center">
 				<ChatBubbleOvalLeftEllipsisIcon
 					width={28}
 					hanging={28}
-					color="black"
+					color={`${isCommented ? '#000' : '#eee'}`}
 					className={`mx-1.5 ${isCommented && 'cursor-pointer'}`}
 					onClick={handleDisplayComments}
 				/>
@@ -34,7 +51,14 @@ export default function PostReactionBar({
 					className="mx-1.5 cursor-pointer"
 					onClick={handleShare}
 				/>
-				<HeartIcon width={36} hanging={36} color="black" className="mx-1.5 cursor-pointer" />
+				<HeartIcon
+					width={36}
+					hanging={36}
+					color="black"
+					// color={`${isLiked ? '#000' : '#eee'}`}
+					className="mx-1.5 cursor-pointer"
+					onClick={toggleLike}
+				/>
 			</div>
 		</div>
 	);

@@ -17,7 +17,7 @@ export default function SinglePost() {
 
 	const [post, setPost] = useState<PostType>();
 	const [displayOption, setDisplayOption] = useState(false);
-	const [displayComments, setDisplayComments] = useState(false);
+	const [displayComments, setDisplayComments] = useState(true);
 
 	const isCommented = post?.comments.length !== 0;
 
@@ -120,12 +120,12 @@ export default function SinglePost() {
 			</div>
 			<PostReactionBar
 				placeId={post.placeId}
-				postId={post.placeId}
+				postId={String(post.feedId)}
 				handleShare={handleShare}
 				handleDisplayComments={handleDisplayComments}
 				isCommented={isCommented}
 			/>
-			<Comments placeId={post.placeId} feedId={post.feedId} />
+			{displayComments && isCommented && <Comments placeId={post.placeId} feedId={post.feedId} />}
 		</article>
 	);
 }

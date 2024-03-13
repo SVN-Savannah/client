@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost:8080';
 
 export async function GET(request: Request) {
-	// console.log('get api 호출');
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get('place');
 	const postId = searchParams.get('post');
@@ -18,10 +17,9 @@ export async function GET(request: Request) {
 			Authorization: `SESSIONID ${sessionToken?.value ?? 'master-key'}`,
 		},
 	});
-	// console.log('comment get api 호출', res);
 
 	const data = await res.json();
-	// console.log('comment data', data);
+
 	return new Response(JSON.stringify(data));
 }
 
@@ -32,7 +30,7 @@ export async function POST(request: Request) {
 	const content = await request.json();
 
 	const sessionToken = await getSessionToken();
-	console.log('url info::::', placeId, postId);
+
 	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${postId}`, {
 		method: 'POST',
 		headers: {
@@ -71,15 +69,15 @@ export async function DELETE(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const placeId = searchParams.get('place');
 	const postId = searchParams.get('post');
+	const commentId = searchParams.get('comment');
 
 	const sessionToken = await getSessionToken();
 
-	const res = await fetch(`${SERVER_URL}/feeds/${placeId}/${postId}`, {
+	const res = await fetch(`${SERVER_URL}/comments/${placeId}/${postId}/${commentId}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `SESSIONID ${sessionToken?.value ?? 'master-key'}`,
 		},
 	});
-
 	return NextResponse.json(res);
 }
